@@ -5,20 +5,80 @@ from pyspark.sql.functions import (
 from pyspark.sql.window import Window
 import logging
 from typing import Dict
+import pandas as pd
+import numpy as np
 
 class TrustScoreCalculator:
-    """Calculate trust scores for products and sellers based on reviews."""
+    """Class for calculating trust scores for Amazon reviews."""
     
     def __init__(self, config: Dict):
-        """
-        Initialize the trust score calculator.
+        """Initialize the trust score calculator.
         
         Args:
-            config: Configuration dictionary containing trust score settings
+            config (Dict): Configuration for trust score calculation
         """
         self.config = config
+        self.weights = config.get('weights', {
+            'verified_purchase': 0.3,
+            'helpful_votes': 0.2,
+            'review_length': 0.15,
+            'sentiment_score': 0.2,
+            'fake_probability': -0.15
+        })
         self.logger = logging.getLogger(__name__)
         
+    def _normalize_score(self, score: float) -> float:
+        """Normalize score to be between 0 and 1."""
+        return max(0, min(1, score))
+    
+    def _calculate_helpful_score(self, helpful_votes: int) -> float:
+        """Calculate normalized helpful votes score."""
+        if helpful_votes == 0:
+            return 0.5
+        return self._normalize_score(np.log1p(helpful_votes) / 10)
+    
+    def _calculate_length_score(self, text: str) -> float:
+        """Calculate normalized review length score."""
+        word_count = len(str(text).split())
+        return self._normalize_score(word_count / 500)  # Normalize against 500 words
+    
+    def calculate(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate trust scores for reviews.
+        
+        Args:
+            df (pd.DataFrame): Input DataFrame with review data
+            
+        Returns:
+            pd.DataFrame: DataFrame with added trust scores
+        """
+        # Create copy of DataFrame
+        scored_df = df.copy()
+        
+        # Calculate component scores
+        scored_df['verified_score'] = scored_df['verified_purchase'].map({'Y': 1.0, 'N': 0.0})
+        scored_df['helpful_score'] = scored_df['helpful_votes'].apply(self._calculate_helpful_score)
+        scored_df['length_score'] = scored_df['review_body'].apply(self._calculate_length_score)
+        
+        # Ensure sentiment and fake probability scores exist
+        if 'sentiment_score' not in scored_df.columns:
+            scored_df['sentiment_score'] = 0.5
+        if 'fake_probability' not in scored_df.columns:
+            scored_df['fake_probability'] = 0.0
+        
+        # Calculate weighted trust score
+        scored_df['trust_score'] = (
+            self.weights['verified_purchase'] * scored_df['verified_score'] +
+            self.weights['helpful_votes'] * scored_df['helpful_score'] +
+            self.weights['review_length'] * scored_df['length_score'] +
+            self.weights['sentiment_score'] * scored_df['sentiment_score'] +
+            self.weights['fake_probability'] * scored_df['fake_probability']
+        )
+        
+        # Normalize final scores
+        scored_df['trust_score'] = scored_df['trust_score'].apply(self._normalize_score)
+        
+        return scored_df
+    
     def _calculate_time_decay(self, df):
         """Calculate time decay factor for reviews based on age."""
         half_life = self.config['time_decay']['half_life_days']
@@ -58,7 +118,7 @@ class TrustScoreCalculator:
         Returns:
             DataFrame with added review trust scores
         """
-        weights = self.config['weights']
+        weights = self.weights
         
         # Add time decay factor
         df = self._calculate_time_decay(df)
@@ -147,7 +207,7 @@ class TrustScoreCalculator:
         
         return seller_trust
     
-    def calculate(self, df):
+    def calculate_all_trust_scores(self, df):
         """
         Calculate all trust scores.
         

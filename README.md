@@ -1,125 +1,90 @@
-# TrustGauge: Advanced Amazon Review Analysis System
+# TrustGauge
 
-## Overview
-TrustGauge is a comprehensive big data analysis system that processes Amazon product reviews to generate trust scores, detect fake reviews, and provide deep insights using advanced NLP techniques and distributed computing.
+TrustGauge is an advanced Amazon review analysis system that helps assess the trustworthiness of product reviews. It combines sentiment analysis, fake review detection, and trust scoring to provide comprehensive insights into review quality.
 
-## Architecture
-![Architecture Diagram](docs/architecture.png)
+## Features
 
-## Key Features
-1. Company-Wide Trust Index
-2. Fake Review Detection
-3. Aspect-Based Sentiment Analysis (ABSA)
-4. Trust-Based Product Leaderboard
-5. Intent Detection
-6. Review Summarization
-7. Review-Product Graph Analytics
-8. Temporal Trust Evolution Analysis
-9. Hybrid Trust Score System
-10. Smart Product Recommendations
+- Sentiment analysis using DistilBERT
+- Fake review detection using anomaly detection
+- Trust score calculation based on multiple factors
+- Interactive visualization dashboard
+- Support for large-scale review analysis
 
-## Tech Stack
-- **Core Technologies**:
-  - PySpark & Spark ML for distributed computing
-  - Python 3.9+
-  - NLTK & spaCy for NLP
-  - RoBERTa & LoRA for advanced language models
-  - OpenAI API integration
-  - Gradio for interactive UI
+## Installation
 
-## Project Structure
-```
-TrustGauge/
-├── data/                      # Data storage and preprocessing
-├── src/
-│   ├── acquisition/          # Data ingestion modules
-│   ├── preprocessing/        # Data cleaning and preparation
-│   ├── models/              # ML models and algorithms
-│   ├── analysis/            # Core analysis modules
-│   ├── visualization/       # Dashboard and plotting
-│   └── utils/              # Helper functions
-├── notebooks/               # Jupyter notebooks for exploration
-├── tests/                  # Unit tests
-├── config/                 # Configuration files
-├── docs/                   # Documentation
-└── ui/                     # Gradio interface
-```
-
-## Setup Instructions
-
-### Prerequisites
-1. Python 3.9+
-2. Apache Spark 3.4+
-3. Java 8/11
-4. Virtual environment tool (conda/venv)
-
-### Installation
+1. Clone the repository:
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/TrustGauge.git
+git clone https://github.com/sunidhitandel/TrustGauge.git
 cd TrustGauge
+```
 
-# Create virtual environment
+2. Create and activate a virtual environment:
+```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install dependencies
+3. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
-### Running on Cloud Platforms
-
-#### Google Colab
-1. Open the notebooks in `notebooks/colab/`
-2. Follow the setup instructions in each notebook
-3. Make sure to mount your Google Drive for data storage
-
-#### Databricks
-1. Import the notebooks from `notebooks/databricks/`
-2. Configure cluster with required dependencies
-3. Follow the execution instructions in each notebook
-
-## Data Pipeline
-
-### 1. Data Ingestion
-- Supports multiple Amazon review datasets
-- Handles TSV format with 555 columns
-- Implements data quality checks
-
-### 2. Preprocessing
-- Text cleaning and normalization
-- Feature extraction
-- Sentiment analysis using RoBERTa
-
-### 3. Analysis
-- Trust score computation
-- Fake review detection
-- Aspect-based sentiment analysis
-
-### 4. Visualization
-- Interactive dashboards
-- Temporal analysis plots
-- Product comparison views
-
 ## Usage
-1. Configure your environment variables:
+
+1. Prepare your Amazon review dataset in TSV format with the following columns:
+   - review_id
+   - product_id
+   - star_rating
+   - helpful_votes
+   - review_body
+   - verified_purchase
+
+2. Run the analysis:
 ```bash
-cp .env.example .env
-# Edit .env with your OpenAI API key and other credentials
+python src/main.py --dataset path/to/your/reviews.tsv [--sample]
 ```
 
-2. Run the data pipeline:
-```bash
-python src/main.py --dataset "amazon_reviews_us_Electronics_v1_00.tsv"
-```
+Options:
+- `--dataset`: Path to your Amazon review dataset (TSV format)
+- `--sample`: Use only a sample of the dataset for testing
+- `--config`: Path to custom configuration file (default: config/config.yaml)
 
-3. Launch the UI:
-```bash
-python src/ui/app.py
-```
+3. Access the dashboard:
+   - Open your web browser
+   - Navigate to http://localhost:7860
+   - Enter product IDs to view detailed analysis
 
-## Contributing
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+## Configuration
+
+The system can be configured through `config/config.yaml`. Key configuration options:
+
+- Data sampling and processing settings
+- NLP model parameters
+- Trust score weights
+- Visualization settings
+- Logging configuration
+
+## Directory Structure
+
+```
+TrustGauge/
+├── config/
+│   └── config.yaml
+├── data/
+│   ├── raw/
+│   └── processed/
+├── src/
+│   ├── acquisition/
+│   ├── analysis/
+│   ├── models/
+│   ├── preprocessing/
+│   ├── visualization/
+│   └── main.py
+├── logs/
+├── requirements.txt
+└── README.md
+```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+
+This project is licensed under the MIT License - see the LICENSE file for details. 

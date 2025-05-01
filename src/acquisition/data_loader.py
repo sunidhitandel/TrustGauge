@@ -4,6 +4,8 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 import logging
 from pathlib import Path
 from typing import Optional, List
+import pandas as pd
+import numpy as np
 
 class AmazonReviewLoader:
     """Data loader for Amazon review datasets using PySpark."""
@@ -12,6 +14,7 @@ class AmazonReviewLoader:
         """Initialize the data loader with a SparkSession."""
         self.spark = spark or self._create_spark_session()
         self._setup_logging()
+        self._df = None
         
     def _create_spark_session(self) -> SparkSession:
         """Create and configure a new Spark session."""
@@ -78,6 +81,7 @@ class AmazonReviewLoader:
                 df = self._apply_quality_checks(df)
             
             self.logger.info(f"Successfully loaded dataset with {df.count()} rows")
+            self._df = df
             return df
             
         except Exception as e:
@@ -124,12 +128,30 @@ class AmazonReviewLoader:
         
         return reduce(DataFrame.unionAll, dfs)
     
-    def sample_dataset(self, df, fraction: float = 0.1, seed: int = 42):
-        """Take a random sample of the dataset for testing or exploration."""
-        return df.sample(fraction=fraction, seed=seed)
+    def sample_dataset(
+        self,
+        df: pd.DataFrame,
+        fraction: float = 0.1,
+        seed: Optional[int] = None
+    ) -> pd.DataFrame:
+        """Sample a fraction of the dataset for testing purposes.
+        
+        Args:
+            df (pd.DataFrame): Input DataFrame
+            fraction (float): Fraction of data to sample (default: 0.1)
+            seed (int, optional): Random seed for reproducibility
+            
+        Returns:
+            pd.DataFrame: Sampled dataset
+        """
+        if seed is not None:
+            np.random.seed(seed)
+        
+        return df.sample(frac=fraction)
     
     def close(self):
         """Stop the Spark session."""
         if self.spark:
             self.spark.stop()
-            self.logger.info("Spark session stopped") 
+            self.logger.info("Spark session stopped")
+            self._df = None 

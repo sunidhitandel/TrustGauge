@@ -15,41 +15,25 @@ data:
   random_seed: 42
 
 nlp:
-  roberta:
-    model_name: "roberta-base"
-    max_length: 512
-    batch_size: 32
-  spacy:
-    model: "en_core_web_sm"
-  openai:
-    model: "gpt-3.5-turbo"
-    temperature: 0.7
-    max_tokens: 150
+  model_name: "distilbert-base-uncased-finetuned-sst-2-english"
+  max_length: 512
+  batch_size: 32
 
 trust_score:
   weights:
-    sentiment: 0.3
-    rating: 0.2
-    verified: 0.2
-    helpfulness: 0.15
-    recency: 0.15
-  time_decay:
-    half_life_days: 180
+    verified_purchase: 0.3
+    helpful_votes: 0.2
+    review_length: 0.15
+    sentiment_score: 0.2
+    fake_probability: -0.15
 
 fake_detection:
-    threshold: 0.8
-    features:
-      - review_length
-      - capital_ratio
-      - punctuation_ratio
-      - sentiment_extremity
-      - verified_purchase
-      - helpful_ratio
+  contamination: 0.1
+  random_seed: 42
 
 visualization:
-  plotly_theme: "plotly_white"
-  color_palette: "Set3"
-  max_items_per_plot: 20
+  theme: "default"
+  port: 7860
 
 logging:
   level: "INFO"
