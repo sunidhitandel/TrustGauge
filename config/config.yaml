@@ -1,0 +1,62 @@
+spark:
+  app_name: "TrustGauge"
+  master: "local[*]"
+  driver_memory: "4g"
+  executor_memory: "4g"
+  config:
+    spark.sql.execution.arrow.pyspark.enabled: true
+    spark.driver.maxResultSize: "2g"
+    spark.sql.shuffle.partitions: 100
+
+data:
+  input_path: "data/raw/"
+  processed_path: "data/processed/"
+  sample_fraction: 0.1
+  random_seed: 42
+
+nlp:
+  roberta:
+    model_name: "roberta-base"
+    max_length: 512
+    batch_size: 32
+  spacy:
+    model: "en_core_web_sm"
+  openai:
+    model: "gpt-3.5-turbo"
+    temperature: 0.7
+    max_tokens: 150
+
+trust_score:
+  weights:
+    sentiment: 0.3
+    rating: 0.2
+    verified: 0.2
+    helpfulness: 0.15
+    recency: 0.15
+  time_decay:
+    half_life_days: 180
+
+fake_detection:
+    threshold: 0.8
+    features:
+      - review_length
+      - capital_ratio
+      - punctuation_ratio
+      - sentiment_extremity
+      - verified_purchase
+      - helpful_ratio
+
+visualization:
+  plotly_theme: "plotly_white"
+  color_palette: "Set3"
+  max_items_per_plot: 20
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/trustgauge.log"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false 
