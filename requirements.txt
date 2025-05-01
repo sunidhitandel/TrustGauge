@@ -14,7 +14,7 @@ sentence-transformers==2.2.2
 openai==0.28.1
 
 # Graph Processing
-networkx==3.1
+networkx==2.8.8
 node2vec==0.4.6
 
 # Visualization
