@@ -1,0 +1,32 @@
+{
+    "Name": "TrustGaugeNotebook",
+    "Role": "arn:aws:iam::*:role/TrustGaugeGlueRole",
+    "Command": {
+        "Name": "glueetl",
+        "ScriptLocation": "s3://trustgauge-bucket/scripts/",
+        "PythonVersion": "3"
+    },
+    "DefaultArguments": {
+        "--job-language": "python",
+        "--job-bookmark-option": "job-bookmark-enable",
+        "--enable-metrics": "true",
+        "--enable-continuous-cloudwatch-log": "true",
+        "--enable-job-insights": "true",
+        "--enable-spark-ui": "true",
+        "--enable-glue-datacatalog": "true",
+        "--TempDir": "s3://trustgauge-bucket/temp/",
+        "--enable-s3-parquet-optimized-committer": "true"
+    },
+    "ExecutionProperty": {
+        "MaxConcurrentRuns": 1
+    },
+    "MaxRetries": 0,
+    "Timeout": 2880,
+    "WorkerType": "G.1X",
+    "NumberOfWorkers": 2,
+    "GlueVersion": "3.0",
+    "Tags": {
+        "Project": "TrustGauge",
+        "Environment": "Production"
+    }
+} 
