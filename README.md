@@ -1,5 +1,5 @@
 
-# TrustGauge – Amazon Reviews Analyzer
+# TrustGauge : Amazon Reviews Analyzer
 
 **TrustGauge** is a scalable pipeline that analyzes Amazon customer reviews to generate Trust Scores for products and their parent companies using NLP and big data technologies.
 
@@ -22,16 +22,17 @@ TrustGauge/
 └── requirements.txt         # Dependencies
 ```
 
-## Key Features
 
-- Scalable review processing via PySpark and AWS Glue
-- Sentiment analysis using HuggingFace BERT
-- Trust Score = 0.7 (star rating) + 0.3 (BERT sentiment)
-- Company-level scoring via product-parent aggregation
-- Plotly-powered insights and dashboards
-- Delta Lake tables on Unity Catalog
+## 🥇 Key Features
+- Handles 50M+ Amazon reviews across 38 categories
+- Sentiment scoring with BERT multilingual model
+- Product + Company TrustScore using hybrid heuristics
+- Interactive Plotly visualizations
+- Cloud-native setup: AWS Glue, S3, IAM, Databricks
+- Delta Lake storage with Unity Catalog
 
-## Technologies
+---
+## 🚀 Technologies
 
 | Layer      | Tools Used                             |
 |-----------|-----------------------------------------|
