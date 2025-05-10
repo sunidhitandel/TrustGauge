@@ -2,6 +2,10 @@
 # TrustGauge : Amazon Reviews Analyzer
 
 **TrustGauge** is a scalable pipeline that analyzes Amazon customer reviews to generate Trust Scores for products and their parent companies using NLP and big data technologies.
+### Web Interface Preview
+
+![TrustGauge UI](notebooks/screenshots/UI.png)
+(notebooks/screenshots/UI.png)
 
 ## Overview
 
